@@ -1,0 +1,8 @@
+If import doesnt work:
+
+
+Try to do the following:
+Deactivate all the venv by using the "deactivate" command in the terminal
+Delete the venv folder and then create a new one with "python3 -m venv venv"
+Activate the new venv with "source venv/bin/activate"
+Install the packages with pip "pip install -r requirements.txt"

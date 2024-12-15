@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask-SocketIO Chat</title>
+</head>
+<body>
+    <h1>Flask-SocketIO Chat</h1>
+    <ul id="messages"></ul>
+    <form id="message-form">
+        <label for="message-input">Message</label>
+        <input type="text" id="message-input" autocomplete="off">
+        <label for="author-input">Author</label>
+        <input type="text" id="author-input" autocomplete="off">
+        <button type="submit">Send</button>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const messageform = document.getElementById('message-form');
+        const messageinput = document.getElementById('message-input');
+        const authorinput = document.getElementById('author-input');
+        const messages = document.getElementById('messages');
+
+        
+
+        messageform.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const message = messageinput.value.trim();
+            const author = authorinput.value.trim()
+            if (message !== '' && author !== '') {
+                socket.emit('message', message);
+                messageinput.value = '';
+            }
+        });
+
+        socket.on('message', function(message){
+            const li = document.createElement('li');
+            li.textContent = message;
+            messages.appendChild(li);
+        });
+    </script>
+</body>
+</html>
