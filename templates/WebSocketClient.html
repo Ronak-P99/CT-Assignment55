@@ -15,6 +15,14 @@
         <input type="text" id="author-input" autocomplete="off">
         <button type="submit">Send</button>
     </form>
+
+    <h2>Get Messages from Specific User</h2>
+    <form id="get-user-messages-form">
+        <label for="get-user-input">Author</label>
+        <input type="text" id="get-user-input" autocomplete="off">
+        <button type="submit">Get Messages</button>
+    </form>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
     <script>
         const socket = io();
@@ -23,22 +31,44 @@
         const authorinput = document.getElementById('author-input');
         const messages = document.getElementById('messages');
 
-        
-
         messageform.addEventListener('submit', function(event) {
             event.preventDefault();
             const message = messageinput.value.trim();
             const author = authorinput.value.trim()
             if (message !== '' && author !== '') {
-                socket.emit('message', message);
+                socket.emit('message', {author, message});
                 messageinput.value = '';
             }
         });
 
-        socket.on('message', function(message){
+        document.getElementById('get-user-messages-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const author = document.getElementById('get-user-input').value.trim();
+            if (author !== '') {
+                socket.emit('get_all_messages', {user: author});
+            }
+        });
+
+        socket.on('message', function(data){
             const li = document.createElement('li');
-            li.textContent = message;
+            li.textContent = `${data.author}: ${data.message}`;
             messages.appendChild(li);
+        });
+
+        socket.on('get_user_messages', function(data) {
+            const userMessages = data.messages;
+            if (userMessages.length === 0) {
+                alert(`No messages found for ${data.author}`);
+            } else {
+                const li = document.createElement('li');
+                li.textContent = `${data.author}'s Messages:`;
+                messages.appendChild(li);
+                userMessages.forEach(msg => {
+                    const msgLi = document.createElement('li');
+                    msgLi.textContent = msg;
+                    messages.appendChild(msgLi);
+                });
+            }
         });
     </script>
 </body>
